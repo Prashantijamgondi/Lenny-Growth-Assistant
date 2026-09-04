@@ -61,45 +61,45 @@ async def ingest_transcripts():
         is_separator_regex=False,
     )
 
-    async with AsyncSessionLocal() as session:
-        for file_path in files:
-            meta = parse_filename(file_path)
-            print(f"Processing: {meta['episode']}")
-            
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+    for file_path in files:
+        meta = parse_filename(file_path)
+        print(f"Processing: {meta['episode']}")
+        
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
 
-            chunks = text_splitter.create_documents([content])
+        chunks = text_splitter.create_documents([content])
+        
+        # Batch process chunks for embedding
+        texts = [c.page_content for c in chunks]
+        
+        if not texts:
+            continue
             
-            # Batch process chunks for embedding
-            texts = [c.page_content for c in chunks]
+        # Compute embeddings
+        embeddings = embedding_model.encode(texts, show_progress_bar=False)
+        
+        db_chunks = []
+        for i, chunk in enumerate(chunks):
+            # Basic heuristic for timestamp if present in text
+            timestamp = "00:00:00"
+            match = re.search(r'\d{2}:\d{2}:\d{2}', chunk.page_content)
+            if match:
+                timestamp = match.group(0)
             
-            if not texts:
-                continue
-                
-            # Compute embeddings
-            embeddings = embedding_model.encode(texts, show_progress_bar=False)
+            db_chunk = TranscriptChunk(
+                episode_title=meta['episode'],
+                guest_name=meta['guest'],
+                chunk_text=chunk.page_content,
+                timestamp_ref=timestamp,
+                embedding=embeddings[i].tolist()
+            )
+            db_chunks.append(db_chunk)
             
-            db_chunks = []
-            for i, chunk in enumerate(chunks):
-                # Basic heuristic for timestamp if present in text
-                timestamp = "00:00:00"
-                match = re.search(r'\d{2}:\d{2}:\d{2}', chunk.page_content)
-                if match:
-                    timestamp = match.group(0)
-                
-                db_chunk = TranscriptChunk(
-                    episode_title=meta['episode'],
-                    guest_name=meta['guest'],
-                    chunk_text=chunk.page_content,
-                    timestamp_ref=timestamp,
-                    embedding=embeddings[i].tolist()
-                )
-                db_chunks.append(db_chunk)
-                
+        async with AsyncSessionLocal() as session:
             session.add_all(db_chunks)
             await session.commit()
-            print(f"Inserted {len(db_chunks)} chunks for {meta['episode']}")
+        print(f"Inserted {len(db_chunks)} chunks for {meta['episode']}")
 
     print("Ingestion complete.")
 
