@@ -61,8 +61,19 @@ async def ingest_transcripts():
         is_separator_regex=False,
     )
 
+    from sqlalchemy import text
+    
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(text("SELECT DISTINCT episode_title FROM transcript_chunks"))
+        existing_episodes = {row[0] for row in result.fetchall()}
+        print(f"Found {len(existing_episodes)} existing episodes in database. Will skip these.")
+
     for file_path in files:
         meta = parse_filename(file_path)
+        if meta['episode'] in existing_episodes:
+            print(f"Skipping {meta['episode']}, already ingested.")
+            continue
+            
         print(f"Processing: {meta['episode']}")
         
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -96,9 +107,14 @@ async def ingest_transcripts():
             )
             db_chunks.append(db_chunk)
             
-        async with AsyncSessionLocal() as session:
-            session.add_all(db_chunks)
-            await session.commit()
+        # Insert in small batches to avoid network packet timeouts over the internet
+        batch_size = 50
+        for i in range(0, len(db_chunks), batch_size):
+            batch = db_chunks[i:i + batch_size]
+            async with AsyncSessionLocal() as session:
+                session.add_all(batch)
+                await session.commit()
+                
         print(f"Inserted {len(db_chunks)} chunks for {meta['episode']}")
 
     print("Ingestion complete.")
