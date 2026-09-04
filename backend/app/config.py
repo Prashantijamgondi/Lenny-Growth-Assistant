@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://postgres:password123@localhost:5432/lenny_assistant"
     
     # LLM Settings
-    DEFAULT_LLM_PROVIDER: str = "ollama"  # or "claude"
+    DEFAULT_LLM_PROVIDER: str = "claude"  # or "ollama"
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "llama3.2:3b"
     
