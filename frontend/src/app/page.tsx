@@ -1,35 +1,35 @@
-'use client';
-
-import { useState } from 'react';
-import { ChatPane } from '../components/Chat/ChatPane';
-import { ArtifactViewer } from '../components/Artifact/ArtifactViewer';
+import React from 'react';
+import ChatPane from '@/components/Chat/ChatPane';
+import ArtifactViewer from '@/components/Artifact/ArtifactViewer';
 
 export default function Home() {
-  const [artifact, setArtifact] = useState<{content: string, type: string, title: string} | null>(null);
-
-  const handleArtifactSelect = (content: string, type: string, title: string) => {
-    setArtifact({ content, type, title });
-  };
-
   return (
-    <main className="flex h-screen w-full bg-white overflow-hidden font-sans">
-      {/* Left side: Chat (takes up more space when artifact is closed) */}
-      <div className={`transition-all duration-300 ease-in-out ${artifact ? 'w-full md:w-1/2 lg:w-5/12 hidden md:block' : 'w-full max-w-5xl mx-auto'}`}>
-        <ChatPane onArtifactSelect={handleArtifactSelect} />
-      </div>
-
-      {/* Right side: Artifact Viewer */}
-      {artifact && (
-        <div className="w-full md:w-1/2 lg:w-7/12 h-full z-20 md:z-auto absolute md:relative top-0 right-0">
-          <ArtifactViewer 
-            type={artifact.type as any}
-            content={artifact.content}
-            title={artifact.title}
-            isOpen={!!artifact}
-            onClose={() => setArtifact(null)}
-          />
+    <main className="flex h-screen w-screen bg-gray-50 text-gray-900 font-sans overflow-hidden">
+      {/* Left Column: Chat Interface */}
+      <section className="flex-1 flex flex-col max-w-3xl mx-auto border-r border-gray-200 bg-white shadow-sm">
+        <header className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+              Lenny Growth Assistant
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Ask product & growth questions backed by podcast transcripts.
+            </p>
+          </div>
+        </header>
+        
+        {/* The main chat component handles the history and input */}
+        <div className="flex-1 overflow-y-auto">
+          <ChatPane />
         </div>
-      )}
+      </section>
+
+      {/* Right Column: Artifact Viewer (Hidden on mobile) */}
+      <aside className="hidden lg:flex flex-col w-1/2 h-full bg-gray-50 p-6">
+        <div className="h-full w-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <ArtifactViewer />
+        </div>
+      </aside>
     </main>
   );
 }
