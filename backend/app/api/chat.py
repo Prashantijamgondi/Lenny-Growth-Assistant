@@ -22,6 +22,7 @@ async def stream_chat(
 ):
     retriever = TranscriptRetriever(db)
     
+    provider_name = req.provider or settings.DEFAULT_LLM_PROVIDER
     # For now, map 'claude' in the UI to Gemini since we swapped providers
     if provider_name in ["claude", "gemini"]:
         llm = GeminiProvider()
