@@ -1,6 +1,6 @@
 import React from 'react';
-import ChatPane from '@/components/Chat/ChatPane';
-import ArtifactViewer from '@/components/Artifact/ArtifactViewer';
+import { ChatPane } from '@/components/Chat/ChatPane';
+import { ArtifactViewer } from '@/components/Artifact/ArtifactViewer';
 
 export default function Home() {
   return (
