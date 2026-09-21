@@ -4,7 +4,7 @@ from .base import BaseLLMProvider
 from app.config import settings
 
 class GeminiProvider(BaseLLMProvider):
-    def __init__(self, api_key: str = None, model: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str = None, model: str = "gemini-3.6-flash"):
         self.api_key = api_key or getattr(settings, "GEMINI_API_KEY", None)
         self.model = model
 
