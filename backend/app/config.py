@@ -18,6 +18,6 @@ class Settings(BaseSettings):
     TOP_K_CHUNKS: int = 5
 
     class Config:
-        env_file = ".env"
+        env_file = "../.env"
 
 settings = Settings()
