@@ -5,7 +5,8 @@ import json
 
 from app.database import get_db
 from app.models.schemas import ChatRequest
-from app.models.db_models import Message
+from app.models.db_models import Message, Session
+from sqlalchemy.future import select
 from app.rag.retriever import TranscriptRetriever
 from app.providers.ollama_provider import OllamaProvider
 from app.providers.cloud_provider import ClaudeProvider
@@ -66,6 +67,11 @@ async def stream_chat(
             yield f"data: {{\"type\": \"token\", \"content\": {json.dumps(token)}}}\n\n"
 
         # Save to DB asynchronously after streaming completes
+        # Ensure session exists (for demo/hardcoded frontend scenarios)
+        session_result = await db.execute(select(Session).filter(Session.id == req.session_id))
+        if not session_result.scalars().first():
+            db.add(Session(id=req.session_id, title="Demo Chat"))
+            
         user_message = Message(session_id=req.session_id, role="user", content=req.message)
         assistant_message = Message(session_id=req.session_id, role="assistant", content=full_response, sources=sources_payload)
         db.add(user_message)
