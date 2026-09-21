@@ -35,10 +35,19 @@ async def stream_chat(
         # 1. Retrieve knowledge
         chunks = await retriever.retrieve_relevant_chunks(req.message)
         
-        sources_payload = [
-            {"episode": c["episode"], "guest": c["guest"], "timestamp": c["timestamp"], "score": c["score"]}
-            for c in chunks
-        ]
+        import math
+        
+        sources_payload = []
+        for c in chunks:
+            score = c.get("score", 0.0)
+            if math.isnan(score):
+                score = 0.0
+            sources_payload.append({
+                "episode": c["episode"], 
+                "guest": c["guest"], 
+                "timestamp": c["timestamp"], 
+                "score": score
+            })
         
         yield f"data: {{\"type\": \"sources\", \"content\": {json.dumps(sources_payload)}}}\n\n"
 
