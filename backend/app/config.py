@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     OLLAMA_MODEL: str = "llama3.2:3b"
     
     ANTHROPIC_API_KEY: Optional[str] = None
+    GEMINI_API_KEY: Optional[str] = None
     
     # Vector Search Settings
     EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"

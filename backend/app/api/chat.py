@@ -9,7 +9,7 @@ from app.models.db_models import Message, Session
 from sqlalchemy.future import select
 from app.rag.retriever import TranscriptRetriever
 from app.providers.ollama_provider import OllamaProvider
-from app.providers.cloud_provider import ClaudeProvider
+from app.providers.gemini_provider import GeminiProvider
 from app.skills.ship30_writer import build_ship30_prompt
 from app.config import settings
 
@@ -22,10 +22,9 @@ async def stream_chat(
 ):
     retriever = TranscriptRetriever(db)
     
-    # Select model provider dynamically
-    provider_name = req.provider or settings.DEFAULT_LLM_PROVIDER
-    if provider_name == "claude":
-        llm = ClaudeProvider()
+    # For now, map 'claude' in the UI to Gemini since we swapped providers
+    if provider_name in ["claude", "gemini"]:
+        llm = GeminiProvider()
     else:
         llm = OllamaProvider()
 

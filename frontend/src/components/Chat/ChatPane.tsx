@@ -15,7 +15,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({ onArtifactSelect }) => {
   const { messages, sendMessage, isStreaming, statusText } = useChatStream(sessionId);
   
   const [input, setInput] = useState('');
-  const [provider, setProvider] = useState<'ollama' | 'claude'>('claude');
+  const [provider, setProvider] = useState<'ollama' | 'gemini'>('gemini');
   const [mode, setMode] = useState<'default' | 'ship30'>('default');
   
   const bottomRef = useRef<HTMLDivElement>(null);

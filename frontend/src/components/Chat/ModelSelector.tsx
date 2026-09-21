@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface ModelSelectorProps {
-  provider: 'ollama' | 'claude';
-  setProvider: (p: 'ollama' | 'claude') => void;
+  provider: 'ollama' | 'gemini';
+  setProvider: (p: 'ollama' | 'gemini') => void;
   mode: 'default' | 'ship30';
   setMode: (m: 'default' | 'ship30') => void;
 }
@@ -10,15 +10,15 @@ interface ModelSelectorProps {
 export const ModelSelector: React.FC<ModelSelectorProps> = ({ provider, setProvider, mode, setMode }) => {
   return (
     <div className="flex items-center space-x-4 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
-      <div className="flex items-center space-x-2 border-r border-gray-200 pr-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Provider</span>
+      <div className="flex items-center space-x-2">
+        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Provider</label>
         <select 
           value={provider} 
-          onChange={(e) => setProvider(e.target.value as 'ollama' | 'claude')}
-          className="text-sm bg-gray-50 border border-gray-200 text-gray-700 rounded px-2 py-1 focus:ring-indigo-500 focus:border-indigo-500"
+          onChange={(e) => setProvider(e.target.value as 'ollama' | 'gemini')}
+          className="text-sm bg-gray-50 border border-gray-200 rounded-md py-1 px-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
+          <option value="gemini">Gemini 2.5 (Cloud)</option>
           <option value="ollama">Ollama (Local)</option>
-          <option value="claude">Claude 3.5 (Cloud)</option>
         </select>
       </div>
       
